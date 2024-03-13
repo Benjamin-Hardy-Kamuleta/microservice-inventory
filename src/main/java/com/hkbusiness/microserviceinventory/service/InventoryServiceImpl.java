@@ -1,13 +1,12 @@
 package com.hkbusiness.microserviceinventory.service;
 
+import com.hkbusiness.microserviceinventory.config.feign.ProductClient;
 import com.hkbusiness.microserviceinventory.dao.InventoryRepository;
 import com.hkbusiness.microserviceinventory.exception.ProductCodeNotFoundException;
 import com.hkbusiness.microserviceinventory.model.Inventory;
-import com.hkbusiness.microserviceinventory.model.ProductClient;
+import com.hkbusiness.microserviceinventory.model.Product;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +15,7 @@ import java.util.Optional;
 public class InventoryServiceImpl implements InventoryService{
 
     private final InventoryRepository inventoryRepository;
+    private final ProductClient productClient;
 
     @Override
     public Inventory checkProductStock(String productCode) throws ProductCodeNotFoundException {
@@ -58,8 +58,7 @@ public class InventoryServiceImpl implements InventoryService{
         return inventoryRepository.findAll();
     }
     private boolean isProductExist(String productCode){
-        List<String> allExistingProductCodes = new ArrayList<>();
-        allExistingProductCodes.add("pr");
+        List<String> allExistingProductCodes = productClient.products().stream().map(Product::productCode).toList();
         return allExistingProductCodes.contains(productCode);
 
     }
